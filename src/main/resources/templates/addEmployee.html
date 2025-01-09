@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Employee</title>
+    <style>
+        form {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+</div>
+<div th:if="${error}" class="alert alert-error">
+    <p th:text="${error}"></p>
+</div>
+<p th:if="${error}" th:text="'Debug: ' + ${error}"></p>
+<h1 style="text-align: center;">Add Employee</h1>
+<form th:action="@{/employees/add}" th:object="${employeeDTO}" method="post">
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter first name" />
+    <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error"></span>
+
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter last name" />
+    <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error"></span>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" th:field="*{email}" placeholder="Enter email address" />
+    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></span>
+
+    <label for="department">Department</label>
+    <input type="text" id="department" th:field="*{department}" placeholder="Enter department" />
+    <span th:if="${#fields.hasErrors('department')}" th:errors="*{department}" class="error"></span>
+
+    <label for="salary">Salary</label>
+    <input type="number" id="salary" th:field="*{salary}" placeholder="Enter salary" step="0.01" />
+    <span th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}" class="error"></span>
+
+    <label for="joinDate">Join Date</label>
+    <input type="date" id="joinDate" th:field="*{joinDate}" />
+    <span th:if="${#fields.hasErrors('joinDate')}" th:errors="*{joinDate}" class="error"></span>
+    <ul>
+        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+    </ul>
+
+    <button type="submit">Add Employee</button>
+</form>
+</body>
+</html>

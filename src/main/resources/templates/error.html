@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        h1 {
+            font-size: 24px;
+            color: #721c24;
+        }
+        p {
+            font-size: 18px;
+        }
+        .container {
+            border: 1px solid #f5c6cb;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f8d7da;
+        }
+        .home-link {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #155724;
+            background-color: #d4edda;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #c3e6cb;
+        }
+        .home-link:hover {
+            background-color: #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Oops! Something went wrong.</h1>
+    <p th:text="'Error Details: ' + ${error}">Error Details: [Error Message]</p>
+    <a href="/employees/getActive" class="home-link">Go to Home Page</a>
+</div>
+</body>
+</html>

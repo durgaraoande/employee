@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Employee Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .alert-success {
+            color: #155724; /* Text color */
+            background-color: #d4edda; /* Light green background */
+            border-color: #c3e6cb; /* Green border */
+        }
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-edit {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-add, .btn-search {
+            background-color: #28a745;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .btn-search {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+</div>
+<div th:if="${error}" class="alert alert-error">
+    <p th:text="${error}"></p>
+</div>
+<!-- Add Employee Button -->
+<a href="/employees/add" class="btn btn-add">Add Employee</a>
+
+<!-- Search Bar and Button -->
+<button class="btn btn-search" onclick="openSearchDialog()">Search</button>
+<h1>Employee Details</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Salary</th>
+        <th>Join Date</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Iterate over the employees list -->
+    <tr th:each="employee : ${employees}">
+        <td th:text="${employee.id}">ID</td>
+        <td th:text="${employee.firstName}">First Name</td>
+        <td th:text="${employee.lastName}">Last Name</td>
+        <td th:text="${employee.email}">Email</td>
+        <td th:text="${employee.department}">Department</td>
+        <td th:text="${employee.salary}">Salary</td>
+        <td th:text="${employee.joinDate}">Join Date</td>
+        <td>
+            <button class="btn btn-edit" th:onclick="'window.location.href=\'/employees/edit/' + ${employee.id} + '\';'">Edit📝</button>
+        </td>
+
+        <td>
+<!--            <button class="btn btn-delete"-->
+<!--                    th:onclick="'confirmDelete(' + ${employee.id} + ')'">Delete❌</button>-->
+        <button class="btn btn-delete" th:onclick="'confirmDelete(' + ${employee.id} + ', this)'">Delete❌</button>
+    </td>
+
+    </tr>
+    </tbody>
+</table>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(employeeId, buttonElement) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This employee will be marked as deleted and won\'t appear in the list anymore!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send DELETE request using Fetch API
+            fetch('/employees/delete/' + employeeId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire(
+                        'Deleted!',
+                        'The employee has been marked as deleted.',
+                        'success'
+                    ).then(() => {
+                        // Remove the row from the table dynamically
+                        const row = buttonElement.closest('tr'); // Find the row closest to the clicked button
+                        row.remove(); // Remove the row from the table
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'There was an error marking the employee as deleted.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error!',
+                    'An unexpected error occurred.',
+                    'error'
+                );
+            });
+        }
+    });
+}
+</script>
+
+<script>
+    function openSearchDialog() {
+        // Open SweetAlert input dialog
+        Swal.fire({
+            title: 'Search by department',
+            input: 'text',
+            inputPlaceholder: 'Enter department name',
+            showCancelButton: true,
+            confirmButtonText: 'Search',
+            cancelButtonText: 'Cancel',
+            preConfirm: (searchTerm) => {
+                if (!searchTerm) {
+                    Swal.showValidationMessage('Please enter a search term');
+                }
+                return searchTerm; // returns the entered value
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                // If search term is provided, redirect to the search endpoint
+                const searchTerm = result.value;
+                // Redirect to the search URL with the search term as a query parameter
+                window.location.href = '/employees/search/' + encodeURIComponent(searchTerm);
+            }
+        });
+    }
+</script>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
+<!--<script>-->
+<!--    function confirmDelete(employeeId) {-->
+<!--        Swal.fire({-->
+<!--            title: 'Are you sure?',-->
+<!--            text: 'You will not be able to recover this!',-->
+<!--            icon: 'warning',-->
+<!--            showCancelButton: true,-->
+<!--            confirmButtonText: 'Yes, delete it!',-->
+<!--        }).then((result) => {-->
+<!--            if (result.isConfirmed) {-->
+<!--                // Send DELETE request using Fetch API-->
+<!--                fetch('/employees/delete/' + employeeId, {-->
+<!--                    method: 'DELETE',-->
+<!--                    headers: {-->
+<!--                        'Content-Type': 'application/json',-->
+<!--                        'Accept': 'application/json'-->
+<!--                    }-->
+<!--                })-->
+<!--                .then(response => {-->
+<!--                    if (response.ok) {-->
+<!--                        Swal.fire(-->
+<!--                            'Deleted!',-->
+<!--                            'The employee has been deleted.',-->
+<!--                            'success'-->
+<!--                        ).then(() => {-->
+<!--                            // Redirect or remove the row from the table after successful deletion-->
+<!--                            location.reload(); // or window.location.href = '/employees/getAllEmployees';-->
+<!--                        });-->
+<!--                    } else {-->
+<!--                        Swal.fire(-->
+<!--                            'Error!',-->
+<!--                            'There was an error deleting the employee.',-->
+<!--                            'error'-->
+<!--                        );-->
+<!--                    }-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    Swal.fire(-->
+<!--                        'Error!',-->
+<!--                        'An unexpected error occurred.',-->
+<!--                        'error'-->
+<!--                    );-->
+<!--                });-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--</script>-->
+
+</body>
+</html>
