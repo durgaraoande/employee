@@ -3,236 +3,858 @@
 <head>
     <title>Employee Table</title>
     <style>
+        /* Global styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+/* Button styles */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-add {
+    background-color: #2563eb;
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-add:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-search, .btn-advanced-search {
+    background-color: #059669;
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-search:hover, .btn-advanced-search:hover {
+    background-color: #047857;
+}
+
+.btn-edit {
+    background-color: #6366f1;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #4f46e5;
+}
+
+.btn-delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #b91c1c;
+}
+
+/* Alert styles */
+.alert {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+}
+
+.alert-success {
+    color: #047857;
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+    color: #991b1b;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+/* Pagination styles */
+.pagination {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pagination li{
+list-style: none;
+}
+
+.pagination .page-link {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    color: #0d6efd;
+    background-color: #fff;
+}
+
+.pagination .page-link:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af;
+    pointer-events: none;
+    background-color: #f3f4f6;
+}
+
+/* Remove any text decorations that might appear as dots */
+.pagination .page-item::before,
+.pagination .page-item::after {
+    content: none;
+}
+
+/* Page size selector */
+.page-size-selector {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.page-size-selector select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    font-size: 0.9rem;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-size-selector select:hover {
+    border-color: #d1d5db;
+}
+
+.page-size-selector select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+/* SweetAlert customizations */
+.swal2-popup {
+    padding: 24px;
+    border-radius: 12px;
+}
+
+.swal2-input, .swal2-select {
+    margin: 8px 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.95rem;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #4b5563;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Page header */
+h1 {
+    color: #1f2937;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 24px 0;
+}
+         /* Global styles */
+        :root {
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+            --secondary-color: #2196F3;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+            --background-color: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+        }
+
+        /* Navigation bar */
+        .navbar {
+            background-color: #333;
+            padding: 1rem;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: black;
+        }
+
+        /* Main content container */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Table styles */
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 0.75rem;
             text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
+            font-weight: 600;
         }
-        tr:hover {
-            background-color: #f5f5f5;
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1rem;
         }
-        .alert {
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            border: 1px solid transparent;
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 1rem;
         }
+
+        /* Alert styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
         .alert-success {
-            color: #155724; /* Text color */
-            background-color: #d4edda; /* Light green background */
-            border-color: #c3e6cb; /* Green border */
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 14px;
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
-        .btn-edit {
-            background-color: #007bff;
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .pagination a {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--secondary-color);
+        }
+
+        .pagination .active {
+            background-color: var(--secondary-color);
             color: white;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
-        }
-        .btn-add, .btn-search {
-            background-color: #28a745;
-            color: white;
-            margin-bottom: 10px;
-        }
-        .btn-search {
-            background-color: #28a745;
-            color: white;
+            border-color: var(--secondary-color);
         }
     </style>
 </head>
 <body>
-<div th:if="${message}" class="alert alert-success">
-    <p th:text="${message}"></p>
+<!-- Add this in your main layout or the page where you need to use the token -->
+<input type="hidden" name="_jwt" id="jwt-token" th:value="${session.jwt_token}" />
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" href="/home">Employee Management</a>
+        <div class="nav-links">
+            <a class="btn btn-secondary" href="/home">Home</a>
+            <a class="btn btn-primary" href="/employees/getActive"
+               sec:authorize="hasAnyRole('USER', 'ADMIN', 'MANAGER')">Employees</a>
+            <form method="post" sec:authorize="isAuthenticated()" style="display: inline;"
+                  th:action="@{/auth/logout}">
+                <button class="btn btn-danger" type="submit">Logout</button>
+            </form>
+            <a class="btn btn-primary" href="/auth/login"
+               sec:authorize="!isAuthenticated()">Login</a>
+            <a class="btn btn-secondary" href="/auth/register"
+               sec:authorize="!isAuthenticated()">Register</a>
+        </div>
+    </div>
+</nav>
+
+
+<div class="main-container">
+    <div class="card">
+        <!-- Existing content -->
+        <div class="alert alert-success" th:if="${message}">
+            <p th:text="${message}"></p>
+        </div>
+        <div class="alert alert-error" th:if="${error}">
+            <p th:text="${error}"></p>
+        </div>
+        <!-- Add Employee Button -->
+        <a class="btn btn-add" href="/employees/add">Add Employee</a>
+
+        <!-- Search Bar and Button -->
+        <button class="btn btn-search" onclick="openSearchDialog()">Search</button>
+
+        <button class="btn btn-advanced-search" onclick="openAdvancedSearchDialog()">Advanced Search</button>
+        <h1>Employee Details</h1>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Salary</th>
+                <th>Join Date</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Iterate over the employees list -->
+            <tr th:each="employee : ${employees}">
+                <td th:text="${employee.id}">ID</td>
+                <td th:text="${employee.firstName}">First Name</td>
+                <td th:text="${employee.lastName}">Last Name</td>
+                <td th:text="${employee.email}">Email</td>
+                <td th:text="${employee.department}">Department</td>
+                <td th:text="${employee.salary}">Salary</td>
+                <td th:text="${employee.joinDate}">Join Date</td>
+                <td>
+                    <button class="btn btn-edit"
+                            th:onclick="'window.location.href=\'/employees/edit/' + ${employee.id} + '\';'">Edit📝
+                    </button>
+                </td>
+
+                <td>
+                    <!--            <button class="btn btn-delete"-->
+                    <!--                    th:onclick="'confirmDelete(' + ${employee.id} + ')'">Delete❌</button>-->
+                    <button class="btn btn-delete" th:onclick="'confirmDelete(' + ${employee.id} + ', this)'">Delete❌
+                    </button>
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination" th:if="${totalPages > 1}">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous button -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{${searchUrl}(
+                        page=${currentPage - 1},
+                        size=${param.size ?: 10},
+                        sortBy=${param.sortBy ?: 'lastName'},
+                        sortDirection=${param.sortDirection ?: 'ASC'})}"
+                           th:if="${currentPage > 0}">Previous</a>
+                        <span class="page-link" th:unless="${currentPage > 0}">Previous</span>
+                    </li>
+
+                    <!-- First page -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{${searchUrl}(
+                        page=0,
+                        size=${param.size ?: 10},
+                        sortBy=${param.sortBy ?: 'lastName'},
+                        sortDirection=${param.sortDirection ?: 'ASC'})}">1</a>
+                    </li>
+
+                    <!-- Ellipsis if needed before current page -->
+                    <li class="page-item disabled" th:if="${currentPage > 3}">
+                        <span class="page-link">...</span>
+                    </li>
+
+                    <!-- Pages around current page -->
+                    <th:block th:with="start=${currentPage > 0 ? currentPage - 1 : 1},
+                           end=${currentPage + 1 < totalPages - 2 ? currentPage + 1 : totalPages - 2}">
+                        <th:block th:each="pageNum : ${#numbers.sequence(start, end)}">
+                            <li class="page-item" th:classappend="${pageNum == currentPage} ? 'active'"
+                                th:if="${pageNum > 0 && pageNum < totalPages - 1}">
+                                <a class="page-link"
+                                   th:href="@{${searchUrl}(
+                                page=${pageNum},
+                                size=${param.size ?: 10},
+                                sortBy=${param.sortBy ?: 'lastName'},
+                                sortDirection=${param.sortDirection ?: 'ASC'})}"
+                                   th:text="${pageNum + 1}">1</a>
+                            </li>
+                        </th:block>
+                    </th:block>
+
+                    <!-- Ellipsis if needed after current page -->
+                    <li class="page-item disabled" th:if="${currentPage < totalPages - 4}">
+                        <span class="page-link">...</span>
+                    </li>
+
+                    <!-- Last page -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'active'"
+                        th:if="${totalPages > 1}">
+                        <a class="page-link"
+                           th:href="@{${searchUrl}(
+                        page=${totalPages - 1},
+                        size=${param.size ?: 10},
+                        sortBy=${param.sortBy ?: 'lastName'},
+                        sortDirection=${param.sortDirection ?: 'ASC'})}"
+                           th:text="${totalPages}">Last</a>
+                    </li>
+
+                    <!-- Next button -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{${searchUrl}(
+                        page=${currentPage + 1},
+                        size=${param.size ?: 10},
+                        sortBy=${param.sortBy ?: 'lastName'},
+                        sortDirection=${param.sortDirection ?: 'ASC'})}"
+                           th:if="${currentPage < totalPages - 1}">Next</a>
+                        <span class="page-link" th:unless="${currentPage < totalPages - 1}">Next</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="page-size-selector">
+            <select id="pageSizeSelect" onchange="changePageSize(this.value)">
+                <option th:selected="${param.size == null || param.size == 10}" value="10">10 per page</option>
+                <option th:selected="${param.size == 20}" value="20">20 per page</option>
+                <option th:selected="${param.size == 50}" value="50">50 per page</option>
+            </select>
+        </div>
+
+    </div>
 </div>
-<div th:if="${error}" class="alert alert-error">
-    <p th:text="${error}"></p>
-</div>
-<!-- Add Employee Button -->
-<a href="/employees/add" class="btn btn-add">Add Employee</a>
 
-<!-- Search Bar and Button -->
-<button class="btn btn-search" onclick="openSearchDialog()">Search</button>
-<h1>Employee Details</h1>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
-        <th>Department</th>
-        <th>Salary</th>
-        <th>Join Date</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Iterate over the employees list -->
-    <tr th:each="employee : ${employees}">
-        <td th:text="${employee.id}">ID</td>
-        <td th:text="${employee.firstName}">First Name</td>
-        <td th:text="${employee.lastName}">Last Name</td>
-        <td th:text="${employee.email}">Email</td>
-        <td th:text="${employee.department}">Department</td>
-        <td th:text="${employee.salary}">Salary</td>
-        <td th:text="${employee.joinDate}">Join Date</td>
-        <td>
-            <button class="btn btn-edit" th:onclick="'window.location.href=\'/employees/edit/' + ${employee.id} + '\';'">Edit📝</button>
-        </td>
 
-        <td>
-<!--            <button class="btn btn-delete"-->
-<!--                    th:onclick="'confirmDelete(' + ${employee.id} + ')'">Delete❌</button>-->
-        <button class="btn btn-delete" th:onclick="'confirmDelete(' + ${employee.id} + ', this)'">Delete❌</button>
-    </td>
+<script>
+    function changePageSize(size) {
+        // Get current URL and parameters
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
 
-    </tr>
-    </tbody>
-</table>
+        // Update size parameter
+        params.set('size', size);
+
+        // Reset to first page when changing size
+        params.set('page', '0');
+
+        // Preserve other parameters
+        const sortBy = params.get('sortBy') || 'lastName';
+        const sortDirection = params.get('sortDirection') || 'ASC';
+        params.set('sortBy', sortBy);
+        params.set('sortDirection', sortDirection);
+
+        // Update URL with new parameters
+        url.search = params.toString();
+        window.location.href = url.toString();
+
+        // Store the selected size in localStorage
+        localStorage.setItem('preferredPageSize', size);
+    }
+
+    // Set the initial page size from localStorage when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const storedSize = localStorage.getItem('preferredPageSize');
+        if (storedSize) {
+            const select = document.getElementById('pageSizeSelect');
+            select.value = storedSize;
+        }
+    });
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmDelete(employeeId, buttonElement) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'This employee will be marked as deleted and won\'t appear in the list anymore!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Send DELETE request using Fetch API
-            fetch('/employees/delete/' + employeeId, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This employee will be marked as deleted and won\'t appear in the list anymore!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Multiple methods to retrieve token
+                let token = null;
+
+                // 1. Check session storage
+                token = sessionStorage.getItem('jwt_token');
+
+                // 2. If not in session storage, check local storage
+                if (!token) {
+                    token = localStorage.getItem('jwt_token');
                 }
-            })
-            .then(response => {
-                if (response.ok) {
-                    Swal.fire(
-                        'Deleted!',
-                        'The employee has been marked as deleted.',
-                        'success'
-                    ).then(() => {
-                        // Remove the row from the table dynamically
-                        const row = buttonElement.closest('tr'); // Find the row closest to the clicked button
-                        row.remove(); // Remove the row from the table
-                    });
-                } else {
+
+                // 3. Check cookies
+                if (!token) {
+                    const cookieToken = document.cookie.split('; ')
+                        .find(row => row.startsWith('jwt_token='))
+                        ?.split('=')[1];
+                    token = cookieToken;
+                }
+
+                // 4. Check hidden input in the page
+                if (!token) {
+                    const hiddenTokenInput = document.querySelector('input[name="_jwt"]');
+                    token = hiddenTokenInput ? hiddenTokenInput.value : null;
+                }
+
+                if (!token) {
+                    Swal.fire('Error!', 'Authentication token not found. Please log in again.', 'error');
+                    return;
+                }
+
+                fetch('/employees/delete/' + employeeId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    // Check for unauthorized access
+                    if (response.status === 403) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Access Denied: You do not have permission to perform this action');
+                        });
+                    }
+
+                    // Check for successful response
+                    if (!response.ok) {
+                        return response.json().catch(() => {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire(
+                            'Deleted!',
+                            'The employee has been marked as deleted.',
+                            'success'
+                        ).then(() => {
+                            const row = buttonElement.closest('tr');
+                            row.remove();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            data.message || 'There was an error marking the employee as deleted.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Full error:', error);
                     Swal.fire(
                         'Error!',
-                        'There was an error marking the employee as deleted.',
+                        error.message || 'An unexpected error occurred',
                         'error'
                     );
-                }
-            })
-            .catch(error => {
-                Swal.fire(
-                    'Error!',
-                    'An unexpected error occurred.',
-                    'error'
-                );
-            });
-        }
-    });
-}
-</script>
-
-<script>
-    function openSearchDialog() {
-        // Open SweetAlert input dialog
-        Swal.fire({
-            title: 'Search by department',
-            input: 'text',
-            inputPlaceholder: 'Enter department name',
-            showCancelButton: true,
-            confirmButtonText: 'Search',
-            cancelButtonText: 'Cancel',
-            preConfirm: (searchTerm) => {
-                if (!searchTerm) {
-                    Swal.showValidationMessage('Please enter a search term');
-                }
-                return searchTerm; // returns the entered value
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                // If search term is provided, redirect to the search endpoint
-                const searchTerm = result.value;
-                // Redirect to the search URL with the search term as a query parameter
-                window.location.href = '/employees/search/' + encodeURIComponent(searchTerm);
+                });
             }
         });
     }
 </script>
+</script>
 
-<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
-<!--<script>-->
-<!--    function confirmDelete(employeeId) {-->
-<!--        Swal.fire({-->
-<!--            title: 'Are you sure?',-->
-<!--            text: 'You will not be able to recover this!',-->
-<!--            icon: 'warning',-->
-<!--            showCancelButton: true,-->
-<!--            confirmButtonText: 'Yes, delete it!',-->
-<!--        }).then((result) => {-->
-<!--            if (result.isConfirmed) {-->
-<!--                // Send DELETE request using Fetch API-->
-<!--                fetch('/employees/delete/' + employeeId, {-->
-<!--                    method: 'DELETE',-->
-<!--                    headers: {-->
-<!--                        'Content-Type': 'application/json',-->
-<!--                        'Accept': 'application/json'-->
-<!--                    }-->
-<!--                })-->
-<!--                .then(response => {-->
-<!--                    if (response.ok) {-->
-<!--                        Swal.fire(-->
-<!--                            'Deleted!',-->
-<!--                            'The employee has been deleted.',-->
-<!--                            'success'-->
-<!--                        ).then(() => {-->
-<!--                            // Redirect or remove the row from the table after successful deletion-->
-<!--                            location.reload(); // or window.location.href = '/employees/getAllEmployees';-->
-<!--                        });-->
-<!--                    } else {-->
-<!--                        Swal.fire(-->
-<!--                            'Error!',-->
-<!--                            'There was an error deleting the employee.',-->
-<!--                            'error'-->
-<!--                        );-->
-<!--                    }-->
-<!--                })-->
-<!--                .catch(error => {-->
-<!--                    Swal.fire(-->
-<!--                        'Error!',-->
-<!--                        'An unexpected error occurred.',-->
-<!--                        'error'-->
-<!--                    );-->
-<!--                });-->
-<!--            }-->
-<!--        });-->
-<!--    }-->
-<!--</script>-->
+<script>
+    function openSearchDialog() {
+    // Open SweetAlert input dialog
+    Swal.fire({
+        title: 'Search by department',
+        html: `
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" class="swal2-input">
+                    <option value="">Select Department</option>
+                    <option value="HR">HR</option>
+                    <option value="IT">IT</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales</option>
+                </select>
+            </div>
+            <div>
+                <label for="sortDirection">Sort Direction</label>
+                <select id="sortDirection" class="swal2-input">
+                    <option value="ASC">Ascending</option>
+                    <option value="DESC">Descending</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" class="swal2-input">
+                    <option value="lastName">Sort By Last Name</option>
+                    <option value="department">Sort By Department</option>
+                    <option value="firstName">Sort By First Name</option>
+                    <option value="salary">Sort By Salary</option>
+                </select>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Search',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+                const department = document.getElementById('department').value;
+                const sortDirection = document.getElementById('sortDirection').value;
+                const sortBy = document.getElementById('sortBy').value;
+
+                 if (!department) {
+                Swal.showValidationMessage('Please select a department');
+                return false;
+                }
+
+                return { department, sortDirection, sortBy };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { department, sortDirection, sortBy } = result.value;
+                window.location.href = '/employees/search/' + encodeURIComponent(department) +
+                    '?sortBy=' + encodeURIComponent(sortBy) +
+                    '&sortDirection=' + encodeURIComponent(sortDirection);
+            }
+        });
+}
+
+</script>
+
+<script>
+    function openAdvancedSearchDialog() {
+    // Open SweetAlert input dialog for advanced search with enhanced UI
+    Swal.fire({
+        title: 'Advanced Search',
+        html: `
+            <div class="form-group">
+                <label for="department">Department (optional)</label>
+                <select id="department" class="swal2-input">
+                    <option value="">Select Department</option>
+                    <option value="HR">HR</option>
+                    <option value="IT">IT</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="firstName">First Name (optional)</label>
+                <input id="firstName" class="swal2-input" placeholder="First Name (optional)">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name (optional)</label>
+                <input id="lastName" class="swal2-input" placeholder="Last Name (optional)">
+            </div>
+            <div class="form-group">
+                <label for="salaryRange">Salary Range (optional)</label>
+                <div style="display: flex; justify-content: space-between;">
+                    <input id="minSalary" class="swal2-input" placeholder="Min Salary" type="number" step="0.01">
+                    <input id="maxSalary" class="swal2-input" placeholder="Max Salary" type="number" step="0.01">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="sortDirection">Sort Direction</label>
+                <select id="sortDirection" class="swal2-input">
+                    <option value="ASC">Ascending</option>
+                    <option value="DESC">Descending</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sortBy">Sort By</label>
+                <select id="sortBy" class="swal2-input">
+                    <option value="lastName">Sort By Last Name</option>
+                    <option value="department">Sort By Department</option>
+                    <option value="firstName">Sort By First Name</option>
+                    <option value="salary">Sort By Salary</option>
+                </select>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Search',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+                const department = document.getElementById('department').value;
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const minSalary = document.getElementById('minSalary').value;
+                const maxSalary = document.getElementById('maxSalary').value;
+                const sortDirection = document.getElementById('sortDirection').value;
+                const sortBy = document.getElementById('sortBy').value;
+
+                return { department, firstName, lastName, minSalary, maxSalary, sortDirection, sortBy };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { department, firstName, lastName, minSalary, maxSalary, sortDirection, sortBy } = result.value;
+                let query = '/employees/advSearch?';
+                if (department) query += `department=${encodeURIComponent(department)}&`;
+                if (firstName) query += `firstName=${encodeURIComponent(firstName)}&`;
+                if (lastName) query += `lastName=${encodeURIComponent(lastName)}&`;
+                if (minSalary) query += `minSalary=${encodeURIComponent(minSalary)}&`;
+                if (maxSalary) query += `maxSalary=${encodeURIComponent(maxSalary)}&`;
+                query += `sortBy=${encodeURIComponent(sortBy)}&sortDirection=${encodeURIComponent(sortDirection)}`;
+                window.location.href = query;
+            }
+        });
+}
+
+</script>
 
 </body>
 </html>

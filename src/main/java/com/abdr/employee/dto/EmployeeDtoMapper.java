@@ -1,12 +1,11 @@
 package com.abdr.employee.dto;
 
 import com.abdr.employee.model.Employee;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EmployeeDtoMapper {
-    public static EmployeeDTO toDto(Employee employee){
+    public static EmployeeDTO toDto(Employee employee) {
         return EmployeeDTO.builder()
                 .id(employee.getId())
                 .firstName(employee.getFirstName())
@@ -18,7 +17,7 @@ public class EmployeeDtoMapper {
                 .build();
     }
 
-    public static Employee toEntity(EmployeeDTO employeeDTO){
+    public static Employee toEntity(EmployeeDTO employeeDTO) {
         return Employee.builder()
                 .id(employeeDTO.getId())
                 .firstName(employeeDTO.getFirstName())

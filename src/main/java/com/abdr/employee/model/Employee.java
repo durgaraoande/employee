@@ -2,7 +2,9 @@ package com.abdr.employee.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +13,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(indexes = {
+        @Index(name = "idx_employee_email", columnList = "email", unique = true),
+        @Index(name = "idx_employee_department", columnList = "department"),
+        @Index(name = "idx_employee_deleted", columnList = "deleted"),
+        @Index(name = "idx_employee_salary", columnList = "salary"),
+        @Index(name = "idx_department_deleted", columnList = "department, deleted")
+})
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +36,7 @@ public class Employee {
     @NotBlank(message = "Please provide last name")
     private String lastName;
 
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "Please provide email") //for string fields
     @Email(message = "Please provide email format.")
     private String email;

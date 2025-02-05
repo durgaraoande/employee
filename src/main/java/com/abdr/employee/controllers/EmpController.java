@@ -7,26 +7,29 @@ import com.abdr.employee.utils.EmployeeNotFoundException;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
 @RequestMapping("/employees")
 public class EmpController {
 
+    private static final Logger log = LoggerFactory.getLogger(EmpController.class);
     private final EmpService empService;
     private final EmployeeDtoMapper employeeDtoMapper;
-    private static final Logger log = LoggerFactory.getLogger(EmpController.class);
 
     public EmpController(EmpService empService, EmployeeDtoMapper employeeDtoMapper) {
         this.empService = empService;
@@ -34,19 +37,42 @@ public class EmpController {
     }
 
     @GetMapping("/getAllEmployees")
-    public String getAllEmployees(Model model){
-        List<EmployeeDTO> employeeDTOs=empService.getAllEmployees().stream().map(EmployeeDtoMapper::toDto).toList();
-        model.addAttribute("employees",employeeDTOs);
+    public String getAllEmployees(@RequestParam(defaultValue = "firstName") String sortBy,
+                                  @RequestParam(defaultValue = "ASC") String sortDirection,
+                                  @RequestParam(defaultValue = "0") Integer page,
+                                  @RequestParam(defaultValue = "10") Integer size,
+                                  Model model) {
+        Page<EmployeeDTO> employeeDTOs = empService.getAllEmployees(page, size, sortBy, sortDirection).map(EmployeeDtoMapper::toDto);
+        if (employeeDTOs.isEmpty()) {
+            model.addAttribute("message", "No employees found");
+        } else {
+            model.addAttribute("employees", employeeDTOs.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", employeeDTOs.getTotalPages());
+            model.addAttribute("totalItems", employeeDTOs.getTotalElements());
+        }
         return "AllEmployees";
     }
 
     @GetMapping("/getActive")
-    public String getActiveEmployees(Model model){
-        List<EmployeeDTO> employeeDTOs=empService.getActiveEmployees().stream().map(EmployeeDtoMapper::toDto).toList();
-        model.addAttribute("employees",employeeDTOs);
+    public String getActiveEmployees(@RequestParam(defaultValue = "firstName") String sortBy,
+                                     @RequestParam(defaultValue = "ASC") String sortDirection,
+                                     @RequestParam(defaultValue = "0") Integer page,
+                                     @RequestParam(defaultValue = "10") Integer size,
+                                     Model model) {
+        Page<EmployeeDTO> employeeDTOs = empService.getActiveEmployees(page, size, sortBy, sortDirection).map(EmployeeDtoMapper::toDto);
+        if (employeeDTOs.isEmpty()) {
+            model.addAttribute("message", "No employees found");
+        } else {
+            model.addAttribute("employees", employeeDTOs.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", employeeDTOs.getTotalPages());
+            model.addAttribute("totalItems", employeeDTOs.getTotalElements());
+        }
         return "AllEmployees";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public String addEmployee(@ModelAttribute @Valid EmployeeDTO employeeDTO,
                               BindingResult result,
@@ -80,6 +106,7 @@ public class EmpController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/add")
     public String showAddEmpForm(Model model) {
         if (!model.containsAttribute("employee")) {
@@ -90,24 +117,31 @@ public class EmpController {
 
 
     @PutMapping("/edit")
-    public String editEmployee(@ModelAttribute @Valid EmployeeDTO employeeDTO,BindingResult result, RedirectAttributes redirectAttributes,Model model){
+    public String editEmployee(@ModelAttribute @Valid EmployeeDTO employeeDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+        log.debug("Received employeeDTO for update: {}", employeeDTO);
         if (result.hasErrors()) {
             model.addAttribute("employeeDTO", employeeDTO);
-            result.getAllErrors().forEach(error -> log.error(error.toString()));
-            return "addEmployee"; // Reload the form with error messages
+//            result.getAllErrors().forEach(error -> log.error(error.toString()));
+            log.error("Validation errors occurred: {}", result.getAllErrors());
+//            return "addEmployee"; // Reload the form with error messages
+            return "edit-employee";
         }
         try {
             String message = empService.updateEmployee(EmployeeDtoMapper.toEntity(employeeDTO));
             redirectAttributes.addFlashAttribute("message", message);
             return "redirect:/employees/getActive";
         } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "Error updating employee: " + e.getMessage());
+//            return "redirect:/employees/edit/" + employeeDTO.getId();  // Go back to edit page on error
+            log.error("Error updating employee: ", e);
             redirectAttributes.addFlashAttribute("error", "Error updating employee: " + e.getMessage());
-            return "redirect:/employees/edit/" + employeeDTO.getId();  // Go back to edit page on error
+            model.addAttribute("employeeDTO", employeeDTO);
+            return "edit-employee";
         }
     }
 
     @GetMapping("/edit/{id}")
-    public String editEmp(Model model,@PathVariable("id") Long id){
+    public String editEmp(Model model, @PathVariable("id") Long id) {
         try {
             EmployeeDTO emp = EmployeeDtoMapper.toDto(empService.findEmpById(id));
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -122,36 +156,113 @@ public class EmpController {
     }
 
 
+//    @DeleteMapping("/delete/{id}")
+//    @ResponseBody
+//    public String deleteEmployee(@PathVariable Long id,RedirectAttributes redirectAttributes) {
+//        try {
+//            empService.softDeleteEmployeeById(id);  // Mark employee as deleted
+//            redirectAttributes.addFlashAttribute("message", "Employee marked as deleted");
+//            return "redirect:/employees/getActive";  // Redirect to active employees
+//        } catch (EmployeeNotFoundException e) {
+//            redirectAttributes.addFlashAttribute("error", "Employee not found: " + e.getMessage());
+//            return "redirect:/employees/getActive";  // Redirect to the employee list with error message
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "Error occurred during deletion: " + e.getMessage());
+//            return "redirect:/employees/getActive";  // Redirect to the employee list with error message
+//        }
+//    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
-    public String deleteEmployee(@PathVariable Long id,RedirectAttributes redirectAttributes) {
+    @ResponseBody //for json serialization
+    public Map<String, String> deleteEmployee(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Current User: {}", authentication.getName());
+        log.info("User Roles: {}", authentication.getAuthorities());
+
+        Map<String, String> response = new HashMap<>();
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            response.put("status", "error");
+            response.put("message", "Access Denied: Only administrators can delete employees");
+            return response;
+        }
+
         try {
-            empService.softDeleteEmployeeById(id);  // Mark employee as deleted
-            redirectAttributes.addFlashAttribute("message", "Employee marked as deleted");
-            return "redirect:/employees/getActive";  // Redirect to active employees
+            empService.softDeleteEmployeeById(id);
+            response.put("status", "success");
+            response.put("message", "Employee successfully deleted");
+            return response;
         } catch (EmployeeNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", "Employee not found: " + e.getMessage());
-            return "redirect:/employees/getActive";  // Redirect to the employee list with error message
+            response.put("status", "error");
+            response.put("message", "Employee not found: " + e.getMessage());
+            return response;
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error occurred during deletion: " + e.getMessage());
-            return "redirect:/employees/getActive";  // Redirect to the employee list with error message
+            response.put("status", "error");
+            response.put("message", "Error occurred during deletion: " + e.getMessage());
+            return response;
         }
     }
 
     @GetMapping("/search/{searchItem}")
-    public String searchEmployees(@PathVariable("searchItem") String searchItem,Model model) throws Exception {
+    public String searchEmployees(@PathVariable("searchItem") String searchItem,
+                                  @RequestParam(defaultValue = "firstName") String sortBy,
+                                  @RequestParam(defaultValue = "ASC") String sortDirection,
+                                  @RequestParam(defaultValue = "0") Integer page,
+                                  @RequestParam(defaultValue = "10") Integer size,
+                                  Model model) throws Exception {
         try {
-            List<EmployeeDTO> employees = empService.searchByDept(searchItem).stream()
-                    .map(EmployeeDtoMapper::toDto)
-                    .toList();
+            Page<EmployeeDTO> employees = empService.searchByDept(searchItem, page, size, sortBy, sortDirection)
+                    .map(EmployeeDtoMapper::toDto);
             if (employees.isEmpty()) {
                 model.addAttribute("message", "No employees found for department: " + searchItem);
             } else {
                 model.addAttribute("employees", employees);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", employees.getTotalPages());
+                model.addAttribute("totalItems", employees.getTotalElements());
             }
             return "AllEmployees";
         } catch (Exception e) {
             model.addAttribute("error", "Error searching employees: " + e.getMessage());
             return "error";  // Display an error page if there was an issue during the search
+        }
+    }
+
+    @GetMapping("/advSearch")
+    public String searchEmployees(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) BigDecimal minSalary,
+            @RequestParam(required = false) BigDecimal maxSalary,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "lastName") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection,
+            Model model) {
+
+        try {
+            Page<EmployeeDTO> results = empService.searchEmployees(
+                    department, firstName, lastName, minSalary, maxSalary, page, size, sortBy, sortDirection
+            ).map(EmployeeDtoMapper::toDto);
+
+            if (results.isEmpty()) {
+                model.addAttribute("message", "No employees found matching the criteria");
+            } else {
+                model.addAttribute("employees", results.getContent());
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", results.getTotalPages());
+                model.addAttribute("totalItems", results.getTotalElements());
+            }
+
+            return "AllEmployees";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error searching employees: " + e.getMessage());
+            return "error";
         }
     }
 

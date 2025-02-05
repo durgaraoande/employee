@@ -3,38 +3,93 @@
 <head>
     <title>Error Page</title>
     <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and background */
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f8d7da;
-            color: #721c24;
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0f7fa;  /* Light blue background */
+            color: #00695c; /* Dark teal color for text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
+
+        /* Container for content */
+        .container {
+            text-align: center;
+            background-color: #ffffff;  /* White background for the error box */
+            border: 1px solid #b2dfdb;  /* Light teal border */
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* Soft shadow */
+            width: 90%;
+            max-width: 550px;
+        }
+
+        /* Heading styles */
         h1 {
-            font-size: 24px;
-            color: #721c24;
+            font-size: 32px;
+            color: #00796b;  /* Teal color for heading */
+            margin-bottom: 20px;
         }
+
+        /* Error message */
         p {
             font-size: 18px;
+            color: #004d40;  /* Darker teal for message text */
+            margin-bottom: 30px;
         }
-        .container {
-            border: 1px solid #f5c6cb;
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #f8d7da;
-        }
+
+        /* Button style */
         .home-link {
-            margin-top: 20px;
             display: inline-block;
-            text-decoration: none;
-            color: #155724;
-            background-color: #d4edda;
-            padding: 10px 15px;
+            padding: 12px 20px;
+            color: #ffffff;
+            background-color: #00796b;  /* Teal color for button */
             border-radius: 5px;
-            border: 1px solid #c3e6cb;
+            text-decoration: none;
+            font-size: 18px;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        .home-link:hover {
-            background-color: #c3e6cb;
+
+        /* Hover and focus effects for the button */
+        .home-link:hover, .home-link:focus {
+            background-color: #004d40;  /* Darker teal on hover */
+            transform: scale(1.05);
+        }
+
+        .home-link:active {
+            background-color: #00332d;  /* Even darker teal on click */
+        }
+
+        /* For small screens */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            .home-link {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>
@@ -42,7 +97,7 @@
 <div class="container">
     <h1>Oops! Something went wrong.</h1>
     <p th:text="'Error Details: ' + ${error}">Error Details: [Error Message]</p>
-    <a href="/employees/getActive" class="home-link">Go to Home Page</a>
+    <a class="home-link" href="/home">Go to Home Page</a>
 </div>
 </body>
 </html>

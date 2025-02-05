@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 1.8em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message {
+            font-size: 1.5em;
+            color: #333;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 5px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-login, .btn-register {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-login:hover, .btn-register:hover {
+            background-color: #45a049;
+        }
+
+        .btn-logout {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background-color: #e41e1e;
+        }
+
+        .btn-details {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-details:hover {
+            background-color: #0b7dda;
+        }
+
+        .btn-reset {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background-color: #e68900;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .card h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .card p {
+            color: #555;
+        }
+
+        .forgot-password {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .forgot-password a {
+            color: #ff9800;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Welcome to Our Application</h1>
+    </header>
+
+    <div class="welcome-message">
+        <p sec:authorize="!isAuthenticated()">
+            Welcome to the home page! Please login to continue or register a new account.
+        </p>
+        <p sec:authorize="isAuthenticated()">
+            Welcome back, <span sec:authentication="name"></span>!
+        </p>
+    </div>
+
+    <div class="btn-container">
+        <div sec:authorize="!isAuthenticated()">
+            <button class="btn-login" onclick="location.href='/auth/login'">Login</button>
+            <button class="btn-register" onclick="location.href='/auth/register'">Register</button>
+
+        </div>
+
+        <div sec:authorize="isAuthenticated()">
+            <form method="post" style="display: inline;" th:action="@{/auth/logout}">
+                <button class="btn-logout" type="submit">Logout</button>
+            </form>
+            <button class="btn-details" onclick="location.href='/employees/getActive'"
+                    sec:authorize="hasAnyRole('USER', 'ADMIN', 'MANAGER')">
+                Employee Details
+            </button>
+            <div class="forgot-password">
+                <a href="/auth/password/reset/request">Reset Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" sec:authorize="isAuthenticated()">
+        <h2>Employee Information</h2>
+        <p>Click on "Employee Details" to view more.</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Our Application. All rights reserved.</p>
+    </footer>
+</div>
+
+</body>
+</html>

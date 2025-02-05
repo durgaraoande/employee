@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <style>
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        form {
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            display: block;
+        }
+        .field-error {
+            color: #dc3545;
+            font-size: 0.8em;
+            margin-top: 4px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+         /* Global styles */
+        :root {
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+            --secondary-color: #2196F3;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+            --background-color: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+        }
+
+        /* Navigation bar */
+        .navbar {
+            background-color: #333;
+            padding: 1rem;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: black;
+        }
+
+        /* Main content container */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* Alert styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .pagination a {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--secondary-color);
+        }
+
+        .pagination .active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        .forgot-password {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .forgot-password a {
+            color: #ff9800;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" href="/home">Employee Management</a>
+        <div class="nav-links">
+            <a class="btn btn-secondary" href="/home">Home</a>
+            <a class="btn btn-primary" href="/employees/getActive"
+               sec:authorize="hasAnyRole('USER', 'ADMIN', 'MANAGER')">Employees</a>
+            <form method="post" sec:authorize="isAuthenticated()" style="display: inline;"
+                  th:action="@{/auth/logout}">
+                <button class="btn btn-danger" type="submit">Logout</button>
+            </form>
+            <a class="btn btn-primary" href="/auth/login"
+               sec:authorize="!isAuthenticated()">Login</a>
+            <a class="btn btn-secondary" href="/auth/register"
+               sec:authorize="!isAuthenticated()">Register</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-container">
+    <div class="card">
+        <!-- Existing content -->
+        <div class="container">
+            <h1 style="text-align: center;">Login</h1>
+
+            <!-- General Error Message -->
+            <div class="alert alert-error" th:if="${error}">
+                <p th:text="${error}"></p>
+            </div>
+
+            <!-- Success Message -->
+            <div class="alert alert-success" th:if="${message}">
+                <p th:text="${message}"></p>
+            </div>
+
+            <form method="post" th:action="@{/auth/login}" th:object="${loginRequest}">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input id="username"
+                           placeholder="Enter your username"
+                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                           th:field="*{username}"
+                           type="text"/>
+                    <span class="field-error"
+                          th:errors="*{username}"
+                          th:if="${#fields.hasErrors('username')}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password"
+                           placeholder="Enter your password"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                           th:field="*{password}"
+                           type="password"/>
+                    <span class="field-error"
+                          th:errors="*{password}"
+                          th:if="${#fields.hasErrors('password')}"></span>
+                </div>
+
+                <button type="submit">Login</button>
+            </form>
+            <div class="forgot-password">
+                <a href="/auth/password/reset/request">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

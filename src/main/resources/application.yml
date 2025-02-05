@@ -8,17 +8,90 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  #
+  #  h2:
+  #    console:
+  #      enabled: true
+  #      path: /h2-console
+  #  datasource:
+  #    url: jdbc:h2:file:./data/empdb
+  #    driver-class-name: org.h2.Driver
+  #    username: sa
+  #    password:
   datasource:
-    url: jdbc:h2:file:./data/empdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
 
   thymeleaf:
-    cache: false
+    cache: true
     mode: HTML
     enabled: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        cache: TRACE
+#        security: DEBUG
+##    com:
+##      abdr:
+##        employee: DEBUG
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info
+
+logging:
+  level:
+    org:
+      springframework:
+        cache: WARN  # Lower log level for production
+        security: INFO  # Security-related logs should be less verbose in production
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # Keep these endpoints exposed for basic monitoring
+        exclude: env,beans  # Optionally exclude sensitive or overly verbose endpoints
+  health:
+    show-details: never  # Hide detailed health information in production
+  info:
+    enabled: true  # Keep info endpoint enabled for necessary application details
+
+
+
+# Password Reset Configuration
+app:
+  password-reset:
+    token-expiry-hours: 24
+    cleanup-cron: 0 0 */1 * * *
+  email:
+    from: ${RESET_PASSWORD_MAIL}
+    reset-password-template: password-reset-mail
+  frontend:
+    reset-password-url: ${RESET_PASSWORD_URL}
+
+google:
+  recaptcha:
+    key:
+      site: ${CAPTCHA_SITE_KEY}
+      secret: ${CAPTCHA_SITE_SECRET}
+    verify-url: https://www.google.com/recaptcha/api/siteverify
